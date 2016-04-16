@@ -22,8 +22,6 @@ import CanvasUtils
 import Shape
 import Model
 
-import Debug.Trace
-
 ----------
 -- Glue
 ----------
@@ -75,7 +73,7 @@ update :: Input.Input -> State -> State
 update input state =
   let new = state.wall > height + 300.0
       wall = if new then -300.0 else state.wall + tick
-      match = maybe false (not <<< fst) $ (List.!! state.answer) $ (current state.qas).answers
+      match = maybe true (not <<< fst) $ (List.!! state.answer) $ (current state.qas).answers
                  
       pos = height - state.score
 
@@ -127,6 +125,7 @@ renderPlayer context state =
             [ circle {x: 500.0, y: pos} 30.0
             , triangle {x:500.0, y: pos} 60.0
             , square {x: 500.0, y: pos} 50.0
+            , ex {x: 500.0, y: pos} 50.0
             ]
   in
       Draw.render context shape
@@ -140,5 +139,3 @@ renderWall context state =
 clearCanvas ctx = do
   C.setFillStyle "#1B1C1B" ctx
   C.fillRect ctx { x: 0.0, y: 0.0, w: width + 100.0, h: height + 100.0 }
-
-
