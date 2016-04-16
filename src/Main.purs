@@ -77,7 +77,7 @@ tick :: Number
 tick = speed / 60.0
 
 speed :: Number
-speed = height / 6.0
+speed = height / 5.0
 
 
 wallHeight :: Number
