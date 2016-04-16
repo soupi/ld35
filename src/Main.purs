@@ -58,7 +58,7 @@ initState =
   { qas: QAs.qas
   , score: 300.0
   , answer: 0
-  , wall: -300.0
+  , wall: -600.0
   , done: false
   , starting: true
   }
@@ -67,7 +67,7 @@ tick :: Number
 tick = speed / 60.0
 
 speed :: Number
-speed = height / 6.0
+speed = height / 5.0
 
 
 wallHeight :: Number
@@ -197,8 +197,6 @@ renderGameComplete context state =
 
 renderQAs :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 renderQAs context state = do
-  Draw.render context $
-    texts 36 white { x: width / 2.0 - toNumber (Str.length (current state.qas).question * 10), y: state.wall + 40.0 } (current state.qas).question
   void $ (traverse (Draw.render context) $
     List.zipWith (<>)
         ( circle   {x: 200.0, y: state.wall + 80.0} 30.0
@@ -217,11 +215,14 @@ renderQAs context state = do
         )
         (map snd (current state.qas).answers)
     )
+  Draw.render context $
+    texts 36 white { x: width / 2.0 - toNumber (Str.length (current state.qas).question * 9), y: state.wall + wallHeight + 40.0 } (current state.qas).question
 
 renderKeys :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 renderKeys context state = do
   Draw.render context $
     smallKabe state.wall width wallHeight <>
+    texts 40 white { x: width / 2.0 - toNumber (Str.length "Dai Kabe by suppi" * 9), y: state.wall + wallHeight + 150.0 } "Dai Kabe by suppi " <>
     texts 36 white { x: width / 2.0 - toNumber (Str.length "The keys are: " * 10), y: state.wall + 40.0 } "The keys are: "
   void $ (traverse (Draw.render context) $
     Array.zipWith (<>)

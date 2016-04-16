@@ -9,11 +9,13 @@ import Graphics.Drawing (circle) as Draw
 import Graphics.Drawing.Font
 import Color as Color
 
+margin :: Number
+margin = 40.0
 
 square :: Point -> Number -> Drawing
 square loc size =
   filled (fillColor (Color.rgb 255 255 80)) $
-    rectangle loc.x loc.y size size
+    rectangle (loc.x - margin) loc.y size size
 
 triangle :: Point -> Number -> Drawing
 triangle l size =
@@ -26,25 +28,25 @@ triangle l size =
 
   where
     base = sqrt ((size / 2.0) `pow` 2.0 + size `pow` 2.0)
-    loc = { x: l.x + size - base, y: l.y }
+    loc = { x: l.x + size - base - margin, y: l.y }
 
 circle :: Point -> Number -> Drawing
 circle loc size =
   filled (fillColor (Color.rgb 0 130 255)) $
-    Draw.circle (loc.x - 5.0 + size) (loc.y + size) size
+    Draw.circle (loc.x - 5.0 + size - margin) (loc.y + size) size
 
 ex :: Point -> Number -> Drawing
 ex loc size =
   outlined (lineWidth 5.0 <> outlineColor (Color.rgb 255 50 100))
     (closed
-        [ { x: loc.x, y: loc.y + size }
-        , { x: loc.x + size, y: loc.y }
+        [ { x: loc.x - margin, y: loc.y + size }
+        , { x: loc.x + size - margin, y: loc.y }
         ]) <>
 
   outlined (lineWidth 5.0 <> outlineColor (Color.rgb 255 50 100))
     (closed
-        [ { x: loc.x, y: loc.y }
-        , { x: loc.x + size, y: loc.y + size }
+        [ { x: loc.x - margin, y: loc.y }
+        , { x: loc.x + size - margin, y: loc.y + size }
         ])
 
 
@@ -53,7 +55,7 @@ daiKabe h ws hs =
   filled (fillColor (Color.rgb 80 40 130))
     (rectangle 0.0 h ws hs) <>
   filled (fillColor (Color.rgb 205 205 205))
-    (rectangle (ws / 2.0 - 25.0) (h + hs - 80.0) 80.0 80.0)
+    (rectangle (ws / 2.0 - 25.0 - margin) (h + hs - 80.0) 80.0 80.0)
 
 smallKabe :: Number -> Number -> Number -> Drawing
 smallKabe h ws hs =
@@ -79,3 +81,6 @@ green = Color.rgb 80 255 80
 
 white :: Color.Color
 white = Color.rgb 255 255 255
+
+blue :: Color.Color
+blue = Color.rgb 10 140 255
