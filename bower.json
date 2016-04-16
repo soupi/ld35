@@ -29,6 +29,7 @@
     "purescript-profunctor-lenses": "*",
     "purescript-signal": "*",
     "purescript-generics": "*",
-    "purescript-drawing": "*"
+    "purescript-drawing": "*",
+    "purescript-colors": "*"
   }
 }

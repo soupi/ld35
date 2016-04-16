@@ -1,8 +1,10 @@
 module Main where
 
 import Prelude (pure, bind, ($), (<$>), Unit, unit)
+import Data.Traversable (traverse)
 import Data.Maybe (Maybe(..))
 import Graphics.Canvas as C
+import Graphics.Drawing as Draw
 import Signal (runSignal, foldp) as S
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (log, CONSOLE)
@@ -12,6 +14,7 @@ import DOM (DOM)
 import Input as Input
 import Utils
 import CanvasUtils
+import Shape
 
 
 ----------
@@ -49,6 +52,11 @@ update x _ = x
 render :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 render context state = do
   clearCanvas context
+  traverse (Draw.render context)
+    [ circle {x: 100.0, y: 100.0} 30.0
+    , triangle {x:500.0, y: 100.0} 60.0
+    , square {x: 250.0, y: 500.0} 50.0
+    ]
   pure unit
 
 clearCanvas ctx = do
