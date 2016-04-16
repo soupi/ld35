@@ -1,14 +1,16 @@
 module Main where
 
 import Prelude
-import Control.Monad (when)
+import Control.Monad (when, unless)
 import Math (ceil, max)
+import Data.Int (toNumber)
 import Data.Traversable (traverse)
 import Data.List (List(..), (!!), (:))
-import Data.List ((!!)) as List
+import Data.List (zipWith,(!!)) as List
 import Data.Array ((!!)) as Array
 import Data.Maybe (Maybe(..), maybe, fromMaybe)
 import Data.Tuple (Tuple(..), fst, snd)
+import Data.String (length) as Str
 import Graphics.Canvas as C
 import Graphics.Drawing as Draw
 import Signal (runSignal, foldp) as S
@@ -52,9 +54,9 @@ type State =
 initState :: State
 initState =
   { qas: Zipper
-           (qa "1+1=" (Tuple true "2" : Tuple false "1" : Tuple false "3" : Nil))
+           (qa "1 + 1 =" (Tuple true "2" : Tuple false "1" : Tuple false "3" : Nil))
            Nil
-           (qa "1+1=" (Tuple false "1" : Tuple true "2" : Tuple false "3" : Nil) : Nil)
+           (qa "1 + 1 =" (Tuple false "1" : Tuple true "2" : Tuple false "3" : Nil) : Nil)
   , score: 300.0
   , answer: 0
   , wall: -300.0
@@ -69,7 +71,7 @@ speed = height / 5.0
 
 
 wallHeight :: Number
-wallHeight = 200.0
+wallHeight = 250.0
 
 initPlayer :: Number
 initPlayer = 300.0
@@ -131,10 +133,15 @@ render context state = do
   clearCanvas context
   renderPlayer context state
   renderWall context state
+  unless state.done (renderQAs context state)
   renderText context state
   when (state.score < -50.0) (renderGameOver context state)
   when state.done (renderGameComplete context state)
   pure unit
+
+clearCanvas ctx = do
+  C.setFillStyle "#1B1C1B" ctx
+  C.fillRect ctx { x: 0.0, y: 0.0, w: width + 100.0, h: height + 100.0 }
 
 renderPlayer :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 renderPlayer context state =
@@ -174,6 +181,25 @@ renderGameComplete context state =
     texts 46 green { x: width / 2.0 - 100.0, y: height / 2.0 - 100.0 } "Well Done!" <>
     texts 46 white { x: width / 2.0 - 180.0, y: height / 2.0 } ("Your Score is: " <> show (ceil state.score))
 
-clearCanvas ctx = do
-  C.setFillStyle "#1B1C1B" ctx
-  C.fillRect ctx { x: 0.0, y: 0.0, w: width + 100.0, h: height + 100.0 }
+renderQAs :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
+renderQAs context state = do
+  Draw.render context $
+    texts 36 white { x: width / 2.0 - toNumber (Str.length (current state.qas).question * 13), y: state.wall + 40.0 } (current state.qas).question
+  void $ (traverse (Draw.render context) $
+    List.zipWith (<>)
+        ( circle   {x: 200.0, y: state.wall + 80.0} 30.0
+        : triangle {x: 200.0, y: state.wall + 170.0} 60.0
+        : square   {x: 650.0, y: state.wall + 80.0} 50.0
+        : ex       {x: 650.0, y: state.wall + 170.0} 50.0
+        : Nil
+        ) $
+
+        List.zipWith (\(Tuple x y) str -> texts 30 white { x: x, y: state.wall + y } str)
+        ( Tuple 300.0 120.0
+        : Tuple 300.0 210.0
+        : Tuple 750.0 110.0
+        : Tuple 750.0 210.0
+        : Nil
+        )
+        (map snd (current state.qas).answers)
+    )
