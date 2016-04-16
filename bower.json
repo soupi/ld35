@@ -1,0 +1,34 @@
+{
+  "name": "ld35",
+  "version": "0.0.1",
+  "authors": [
+    "Gil Mizrahi <soupiral@gmail.com>"
+  ],
+  "license": "BSD3",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-debug": "*",
+    "purescript-dom": "*",
+    "purescript-console": "*",
+    "purescript-strings": "*",
+    "purescript-aff": "*",
+    "purescript-control": "*",
+    "purescript-arrays": "*",
+    "purescript-canvas": "*",
+    "purescript-eff": "*",
+    "purescript-maybe": "*",
+    "purescript-prelude": "*",
+    "purescript-profunctor-lenses": "*",
+    "purescript-signal": "*",
+    "purescript-generics": "*",
+    "purescript-drawing": "*"
+  }
+}
