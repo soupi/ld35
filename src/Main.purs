@@ -7,7 +7,7 @@ import Data.Int (toNumber)
 import Data.Traversable (traverse)
 import Data.List (List(..), (!!), (:))
 import Data.List (zipWith,(!!)) as List
-import Data.Array ((!!)) as Array
+import Data.Array (zipWith, (!!)) as Array
 import Data.Maybe (Maybe(..), maybe, fromMaybe)
 import Data.Tuple (Tuple(..), fst, snd)
 import Data.String (length) as Str
@@ -25,6 +25,7 @@ import Zipper
 import CanvasUtils
 import Shape
 import Model
+import QAs as QAs
 
 ----------
 -- Glue
@@ -48,26 +49,25 @@ type State =
   , answer :: Answer
   , wall :: Number
   , done :: Boolean
+  , starting :: Boolean
   }
 
 
 initState :: State
 initState =
-  { qas: Zipper
-           (qa "1 + 1 =" (Tuple true "2" : Tuple false "1" : Tuple false "3" : Nil))
-           Nil
-           (qa "1 + 1 =" (Tuple false "1" : Tuple true "2" : Tuple false "3" : Nil) : Nil)
+  { qas: QAs.qas
   , score: 300.0
   , answer: 0
   , wall: -300.0
   , done: false
+  , starting: true
   }
 
 tick :: Number
 tick = speed / 60.0
 
 speed :: Number
-speed = height / 5.0
+speed = height / 6.0
 
 
 wallHeight :: Number
@@ -83,9 +83,18 @@ initWall = -300.0
 -- Update
 ------------
 
-
 update :: Input.Input -> State -> State
 update input state =
+  let new = state.wall > height + 300.0
+      wall = if new then initWall else state.wall + tick
+      starting = if new then false else state.starting
+  in if state.starting then
+       state { wall = wall, starting = starting }
+     else
+       updateGame input state
+
+updateGame :: Input.Input -> State -> State
+updateGame input state =
   let new = state.wall > height + 300.0
       wall = if new then initWall else state.wall + tick
       match = maybe true (not <<< fst) $ (List.!! state.answer) $ (current state.qas).answers
@@ -122,6 +131,7 @@ update input state =
       , score: if done then state.score else score
       , answer: answer
       , done: done
+      , starting: false
       }
 
 ------------
@@ -131,12 +141,16 @@ update input state =
 render :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 render context state = do
   clearCanvas context
-  renderPlayer context state
-  renderWall context state
-  unless state.done (renderQAs context state)
-  renderText context state
-  when (state.score < -50.0) (renderGameOver context state)
-  when state.done (renderGameComplete context state)
+  if state.starting
+    then
+      renderKeys context state
+    else do
+      renderPlayer context state
+      renderWall context state
+      unless state.done (renderQAs context state)
+      renderText context state
+      when (state.score < -50.0) (renderGameOver context state)
+      when state.done (renderGameComplete context state)
   pure unit
 
 clearCanvas ctx = do
@@ -184,7 +198,7 @@ renderGameComplete context state =
 renderQAs :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 renderQAs context state = do
   Draw.render context $
-    texts 36 white { x: width / 2.0 - toNumber (Str.length (current state.qas).question * 13), y: state.wall + 40.0 } (current state.qas).question
+    texts 36 white { x: width / 2.0 - toNumber (Str.length (current state.qas).question * 10), y: state.wall + 40.0 } (current state.qas).question
   void $ (traverse (Draw.render context) $
     List.zipWith (<>)
         ( circle   {x: 200.0, y: state.wall + 80.0} 30.0
@@ -202,4 +216,30 @@ renderQAs context state = do
         : Nil
         )
         (map snd (current state.qas).answers)
+    )
+
+renderKeys :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
+renderKeys context state = do
+  Draw.render context $
+    smallKabe state.wall width wallHeight <>
+    texts 36 white { x: width / 2.0 - toNumber (Str.length "The keys are: " * 10), y: state.wall + 40.0 } "The keys are: "
+  void $ (traverse (Draw.render context) $
+    Array.zipWith (<>)
+        [ circle   {x: 200.0, y: state.wall + 80.0} 30.0
+        , triangle {x: 200.0, y: state.wall + 170.0} 60.0
+        , square   {x: 650.0, y: state.wall + 80.0} 50.0
+        , ex       {x: 650.0, y: state.wall + 170.0} 50.0
+        ] $
+
+        Array.zipWith (\(Tuple x y) str -> texts 30 white { x: x, y: state.wall + y } str)
+        [ Tuple 300.0 120.0
+        , Tuple 300.0 210.0
+        , Tuple 750.0 110.0
+        , Tuple 750.0 210.0
+        ]
+        [ " = 1"
+        , " = 2"
+        , " = 3"
+        , " = 4"
+        ]
     )

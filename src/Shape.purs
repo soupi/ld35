@@ -55,6 +55,11 @@ daiKabe h ws hs =
   filled (fillColor (Color.rgb 205 205 205))
     (rectangle (ws / 2.0 - 25.0) (h + hs - 80.0) 80.0 80.0)
 
+smallKabe :: Number -> Number -> Number -> Drawing
+smallKabe h ws hs =
+  filled (fillColor (Color.rgb 80 40 130))
+    (rectangle 0.0 h ws hs)
+
 texts :: Int -> Color.Color -> Point -> String -> Drawing
 texts size clr loc =
   text (myfont size) loc.x loc.y (fillColor clr)
