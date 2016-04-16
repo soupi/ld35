@@ -2,6 +2,7 @@ module Shape
   ( square
   , triangle
   , circle
+  , daiKabe
   )
 where
 
@@ -34,3 +35,7 @@ circle loc size =
   filled (fillColor (Color.rgb 0 130 255)) $
     Draw.circle loc.x loc.y size
 
+daiKabe :: Number -> Number -> Number -> Drawing
+daiKabe h ws hs =
+  filled (fillColor (Color.rgb 80 40 130)) $
+    rectangle 0.0 h ws hs

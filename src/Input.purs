@@ -46,6 +46,13 @@ instance showBtnAction :: Show BtnAction where
   show Click = "Click"
   show Release = "Release"
 
+instance eqBtnAction :: Eq BtnAction where
+  eq Hold Hold = true
+  eq Click Click = true
+  eq Idle Idle = true
+  eq Release Release = true
+  eq _ _ = false
+
 instance showMouse :: Show Mouse where
   show (Mouse p b) = "Mouse " ++ "(" ++ show p.x ++ ", " ++ show p.y ++ ") " ++ show b
 
@@ -135,16 +142,16 @@ arrowsSignal = do
       <*>  upArrow
 
 leftKeyCode :: Int
-leftKeyCode = 37
+leftKeyCode = 49
 
 rightKeyCode :: Int
-rightKeyCode = 39
+rightKeyCode = 52
 
 upKeyCode :: Int
-upKeyCode = 38
+upKeyCode = 50
 
 downKeyCode :: Int
-downKeyCode = 40
+downKeyCode = 51
 
 asNum :: Boolean -> Number
 asNum b = if b then 1.0 else 0.0
