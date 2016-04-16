@@ -13789,7 +13789,7 @@ var Shape = require("../Shape");
 var Model = require("../Model");
 var QAs = require("../QAs");
 var wallHeight = 250.0;
-var speed = CanvasUtils.height / 6.0;
+var speed = CanvasUtils.height / 5.0;
 var tick = speed / 60.0;
 var renderWall = function (context) {
     return function (state) {
@@ -13815,11 +13815,7 @@ var renderText = function (context) {
 var renderQAs = function (context) {
     return function (state) {
         return function __do() {
-            Graphics_Drawing.render(context)(Shape.texts(36)(Shape.white)({
-                x: CanvasUtils.width / 2.0 - Data_Int.toNumber(Data_String.length((Zipper.current(state.qas)).question) * 10 | 0), 
-                y: state.wall + 40.0
-            })((Zipper.current(state.qas)).question))();
-            return Prelude["void"](Control_Monad_Eff.functorEff)(Data_Traversable.traverse(Data_List_1.traversableList)(Control_Monad_Eff.applicativeEff)(Graphics_Drawing.render(context))(Data_List_1.zipWith(Prelude["<>"](Graphics_Drawing.semigroupDrawing))(Data_List_1[":"](Shape.circle({
+            Prelude["void"](Control_Monad_Eff.functorEff)(Data_Traversable.traverse(Data_List_1.traversableList)(Control_Monad_Eff.applicativeEff)(Graphics_Drawing.render(context))(Data_List_1.zipWith(Prelude["<>"](Graphics_Drawing.semigroupDrawing))(Data_List_1[":"](Shape.circle({
                 x: 200.0, 
                 y: state.wall + 80.0
             })(30.0))(Data_List_1[":"](Shape.triangle({
@@ -13839,6 +13835,10 @@ var renderQAs = function (context) {
                     })(str);
                 };
             })(Data_List_1[":"](new Data_Tuple.Tuple(300.0, 120.0))(Data_List_1[":"](new Data_Tuple.Tuple(300.0, 210.0))(Data_List_1[":"](new Data_Tuple.Tuple(750.0, 110.0))(Data_List_1[":"](new Data_Tuple.Tuple(750.0, 210.0))(Data_List_1.Nil.value)))))(Prelude.map(Data_List_1.functorList)(Data_Tuple.snd)((Zipper.current(state.qas)).answers)))))();
+            return Graphics_Drawing.render(context)(Shape.texts(36)(Shape.white)({
+                x: CanvasUtils.width / 2.0 - Data_Int.toNumber(Data_String.length((Zipper.current(state.qas)).question) * 9 | 0), 
+                y: state.wall + wallHeight + 40.0
+            })((Zipper.current(state.qas)).question))();
         };
     };
 };
@@ -13869,10 +13869,13 @@ var renderPlayer = function (context) {
 var renderKeys = function (context) {
     return function (state) {
         return function __do() {
-            Graphics_Drawing.render(context)(Prelude["<>"](Graphics_Drawing.semigroupDrawing)(Shape.smallKabe(state.wall)(CanvasUtils.width)(wallHeight))(Shape.texts(36)(Shape.white)({
+            Graphics_Drawing.render(context)(Prelude["<>"](Graphics_Drawing.semigroupDrawing)(Shape.smallKabe(state.wall)(CanvasUtils.width)(wallHeight))(Prelude["<>"](Graphics_Drawing.semigroupDrawing)(Shape.texts(40)(Shape.white)({
+                x: CanvasUtils.width / 2.0 - Data_Int.toNumber(Data_String.length("Dai Kabe by suppi") * 9 | 0), 
+                y: state.wall + wallHeight + 150.0
+            })("Dai Kabe by suppi "))(Shape.texts(36)(Shape.white)({
                 x: CanvasUtils.width / 2.0 - Data_Int.toNumber(Data_String.length("The keys are: ") * 10 | 0), 
                 y: state.wall + 40.0
-            })("The keys are: ")))();
+            })("The keys are: "))))();
             return Prelude["void"](Control_Monad_Eff.functorEff)(Data_Traversable.traverse(Data_Traversable.traversableArray)(Control_Monad_Eff.applicativeEff)(Graphics_Drawing.render(context))(Data_Array.zipWith(Prelude["<>"](Graphics_Drawing.semigroupDrawing))([ Shape.circle({
                 x: 200.0, 
                 y: state.wall + 80.0
@@ -14047,7 +14050,7 @@ var initState = {
     qas: QAs.qas, 
     score: 300.0, 
     answer: 0, 
-    wall: -300.0, 
+    wall: -600.0, 
     done: false, 
     starting: true
 };
@@ -15356,7 +15359,7 @@ var Zipper = require("../Zipper");
 var Data_List = require("../Data.List");
 var Data_Tuple = require("../Data.Tuple");
 var Model = require("../Model");
-var qas = new Zipper.Zipper(Model.qa("1 + 1 =")(Data_List[":"](new Data_Tuple.Tuple(true, "2"))(Data_List[":"](new Data_Tuple.Tuple(false, "3"))(Data_List.Nil.value))), Data_List.Nil.value, Data_List[":"](Model.qa("2 * 2 =")(Data_List[":"](new Data_Tuple.Tuple(false, "8"))(Data_List[":"](new Data_Tuple.Tuple(true, "4"))(Data_List[":"](new Data_Tuple.Tuple(false, "16"))(Data_List.Nil.value)))))(Data_List[":"](Model.qa("3 * 3 =")(Data_List[":"](new Data_Tuple.Tuple(false, "6"))(Data_List[":"](new Data_Tuple.Tuple(false, "15"))(Data_List[":"](new Data_Tuple.Tuple(false, "1"))(Data_List[":"](new Data_Tuple.Tuple(true, "9"))(Data_List.Nil.value))))))(Data_List.Nil.value)));
+var qas = new Zipper.Zipper(Model.qa("1 + 1 =")(Data_List[":"](new Data_Tuple.Tuple(true, "2"))(Data_List[":"](new Data_Tuple.Tuple(false, "3"))(Data_List.Nil.value))), Data_List.Nil.value, Data_List[":"](Model.qa("2 * 2 =")(Data_List[":"](new Data_Tuple.Tuple(false, "8"))(Data_List[":"](new Data_Tuple.Tuple(true, "4"))(Data_List[":"](new Data_Tuple.Tuple(false, "16"))(Data_List.Nil.value)))))(Data_List[":"](Model.qa("3 * 3 =")(Data_List[":"](new Data_Tuple.Tuple(false, "6"))(Data_List[":"](new Data_Tuple.Tuple(false, "15"))(Data_List[":"](new Data_Tuple.Tuple(false, "1"))(Data_List[":"](new Data_Tuple.Tuple(true, "9"))(Data_List.Nil.value))))))(Data_List[":"](Model.qa("5 * 8 =")(Data_List[":"](new Data_Tuple.Tuple(false, "45"))(Data_List[":"](new Data_Tuple.Tuple(false, "35"))(Data_List[":"](new Data_Tuple.Tuple(true, "40"))(Data_List[":"](new Data_Tuple.Tuple(false, "38"))(Data_List.Nil.value))))))(Data_List[":"](Model.qa("2 * 4 + 3 * 2 =")(Data_List[":"](new Data_Tuple.Tuple(true, "14"))(Data_List[":"](new Data_Tuple.Tuple(false, "22"))(Data_List[":"](new Data_Tuple.Tuple(false, "12"))(Data_List[":"](new Data_Tuple.Tuple(false, "7"))(Data_List.Nil.value))))))(Data_List[":"](Model.qa("35 - 16 =")(Data_List[":"](new Data_Tuple.Tuple(false, "21"))(Data_List[":"](new Data_Tuple.Tuple(true, "19"))(Data_List[":"](new Data_Tuple.Tuple(false, "18"))(Data_List[":"](new Data_Tuple.Tuple(false, "29"))(Data_List.Nil.value))))))(Data_List[":"](Model.qa("-4 * 3 + 15 =")(Data_List[":"](new Data_Tuple.Tuple(false, "1"))(Data_List[":"](new Data_Tuple.Tuple(false, "5"))(Data_List[":"](new Data_Tuple.Tuple(true, "3"))(Data_List[":"](new Data_Tuple.Tuple(false, "-3"))(Data_List.Nil.value))))))(Data_List.Nil.value)))))));
 module.exports = {
     qas: qas
 };
@@ -15373,30 +15376,6 @@ var Graphics_Drawing_Font = require("../Graphics.Drawing.Font");
 var Color = require("../Color");
 var Data_Foldable = require("../Data.Foldable");
 var white = Color.rgb(255)(255)(255);
-var triangle = function (l) {
-    return function (size) {
-        var base = $$Math.sqrt($$Math.pow(size / 2.0)(2.0) + $$Math.pow(size)(2.0));
-        var loc = {
-            x: (l.x + size) - base, 
-            y: l.y
-        };
-        return Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(80)(255)(80)))(Graphics_Drawing_1.closed(Data_Foldable.foldableArray)([ {
-            x: loc.x, 
-            y: loc.y + size
-        }, {
-            x: loc.x + base, 
-            y: loc.y + size
-        }, {
-            x: loc.x + base / 2.0, 
-            y: loc.y
-        } ]));
-    };
-};
-var square = function (loc) {
-    return function (size) {
-        return Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(255)(255)(80)))(Graphics_Drawing_1.rectangle(loc.x)(loc.y)(size)(size));
-    };
-};
 var smallKabe = function (h) {
     return function (ws) {
         return function (hs) {
@@ -15416,20 +15395,45 @@ var texts = function (size) {
         };
     };
 };
+var margin = 40.0;
+var square = function (loc) {
+    return function (size) {
+        return Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(255)(255)(80)))(Graphics_Drawing_1.rectangle(loc.x - margin)(loc.y)(size)(size));
+    };
+};
+var triangle = function (l) {
+    return function (size) {
+        var base = $$Math.sqrt($$Math.pow(size / 2.0)(2.0) + $$Math.pow(size)(2.0));
+        var loc = {
+            x: (l.x + size) - base - margin, 
+            y: l.y
+        };
+        return Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(80)(255)(80)))(Graphics_Drawing_1.closed(Data_Foldable.foldableArray)([ {
+            x: loc.x, 
+            y: loc.y + size
+        }, {
+            x: loc.x + base, 
+            y: loc.y + size
+        }, {
+            x: loc.x + base / 2.0, 
+            y: loc.y
+        } ]));
+    };
+};
 var green = Color.rgb(80)(255)(80);
 var ex = function (loc) {
     return function (size) {
         return Prelude["<>"](Graphics_Drawing_1.semigroupDrawing)(Graphics_Drawing_1.outlined(Prelude["<>"](Graphics_Drawing_1.semigroupOutlineStyle)(Graphics_Drawing_1.lineWidth(5.0))(Graphics_Drawing_1.outlineColor(Color.rgb(255)(50)(100))))(Graphics_Drawing_1.closed(Data_Foldable.foldableArray)([ {
-            x: loc.x, 
+            x: loc.x - margin, 
             y: loc.y + size
         }, {
-            x: loc.x + size, 
+            x: (loc.x + size) - margin, 
             y: loc.y
         } ])))(Graphics_Drawing_1.outlined(Prelude["<>"](Graphics_Drawing_1.semigroupOutlineStyle)(Graphics_Drawing_1.lineWidth(5.0))(Graphics_Drawing_1.outlineColor(Color.rgb(255)(50)(100))))(Graphics_Drawing_1.closed(Data_Foldable.foldableArray)([ {
-            x: loc.x, 
+            x: loc.x - margin, 
             y: loc.y
         }, {
-            x: loc.x + size, 
+            x: (loc.x + size) - margin, 
             y: loc.y + size
         } ])));
     };
@@ -15437,16 +15441,18 @@ var ex = function (loc) {
 var daiKabe = function (h) {
     return function (ws) {
         return function (hs) {
-            return Prelude["<>"](Graphics_Drawing_1.semigroupDrawing)(Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(80)(40)(130)))(Graphics_Drawing_1.rectangle(0.0)(h)(ws)(hs)))(Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(205)(205)(205)))(Graphics_Drawing_1.rectangle(ws / 2.0 - 25.0)((h + hs) - 80.0)(80.0)(80.0)));
+            return Prelude["<>"](Graphics_Drawing_1.semigroupDrawing)(Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(80)(40)(130)))(Graphics_Drawing_1.rectangle(0.0)(h)(ws)(hs)))(Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(205)(205)(205)))(Graphics_Drawing_1.rectangle(ws / 2.0 - 25.0 - margin)((h + hs) - 80.0)(80.0)(80.0)));
         };
     };
 };
 var circle = function (loc) {
     return function (size) {
-        return Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(0)(130)(255)))(Graphics_Drawing_1.circle((loc.x - 5.0) + size)(loc.y + size)(size));
+        return Graphics_Drawing_1.filled(Graphics_Drawing_1.fillColor(Color.rgb(0)(130)(255)))(Graphics_Drawing_1.circle(((loc.x - 5.0) + size) - margin)(loc.y + size)(size));
     };
 };
+var blue = Color.rgb(10)(140)(255);
 module.exports = {
+    blue: blue, 
     white: white, 
     green: green, 
     red: red, 
@@ -15458,7 +15464,8 @@ module.exports = {
     ex: ex, 
     circle: circle, 
     triangle: triangle, 
-    square: square
+    square: square, 
+    margin: margin
 };
 
 },{"../Color":"/Users/suppi/code/purescript/ld35/output/Color/index.js","../Data.Foldable":"/Users/suppi/code/purescript/ld35/output/Data.Foldable/index.js","../Data.Monoid":"/Users/suppi/code/purescript/ld35/output/Data.Monoid/index.js","../Graphics.Drawing":"/Users/suppi/code/purescript/ld35/output/Graphics.Drawing/index.js","../Graphics.Drawing.Font":"/Users/suppi/code/purescript/ld35/output/Graphics.Drawing.Font/index.js","../Math":"/Users/suppi/code/purescript/ld35/output/Math/index.js","../Prelude":"/Users/suppi/code/purescript/ld35/output/Prelude/index.js"}],"/Users/suppi/code/purescript/ld35/output/Signal.DOM/foreign.js":[function(require,module,exports){
