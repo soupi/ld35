@@ -17,9 +17,13 @@
   "dependencies": {
     "purescript-debug": "*",
     "purescript-dom": "*",
+    "purescript-location": "*",
     "purescript-console": "*",
     "purescript-strings": "*",
     "purescript-aff": "*",
+    "purescript-affjax": "*",
+    "purescript-uri": "*",
+    "purescript-foreign": "*",
     "purescript-control": "*",
     "purescript-arrays": "*",
     "purescript-canvas": "*",

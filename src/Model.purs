@@ -2,6 +2,7 @@ module Model where
 
 import Data.Tuple
 import Data.List
+import Data.Foldable (foldr)
 
 
 type QA =
@@ -17,10 +18,4 @@ qa q as =
 
 type Answer = Int
 
-{-
-data Answer
-  = One
-  | Two
-  | Three
-  | Four
--}
+

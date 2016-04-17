@@ -4,6 +4,7 @@ import Prelude
 import Data.Tuple
 import Data.List hiding (length)
 import Data.List (length) as List
+import Data.Foldable (foldr)
 
 import Utils
 
@@ -41,3 +42,7 @@ position (Zipper _ b _) = List.length b
 
 length :: forall a. Zipper a -> Int
 length (Zipper _ b f) = 1 + List.length b + List.length f
+
+fromArray :: forall a. a -> Array a -> Zipper a
+fromArray x xs =
+  Zipper x Nil (foldr Cons Nil xs)

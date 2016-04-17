@@ -15,9 +15,13 @@ import Graphics.Canvas as C
 import Graphics.Drawing as Draw
 import Signal (runSignal, foldp) as S
 import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (log, CONSOLE)
+import Control.Monad.Eff.Exception (EXCEPTION)
+import Control.Monad.Aff (launchAff)
 import Control.Timer (TIMER)
 import DOM (DOM)
+import Network.HTTP.Affjax (AJAX)
 
 import Input as Input
 import Utils
@@ -31,13 +35,15 @@ import QAs as QAs
 -- Glue
 ----------
 
-main :: forall e. Eff (console :: CONSOLE, dom :: DOM, timer :: TIMER, canvas :: C.Canvas | e) Unit
+main :: forall e. Eff (ajax :: AJAX, err :: EXCEPTION, console :: CONSOLE, dom :: DOM, timer :: TIMER, canvas :: C.Canvas | e) Unit
 main = do
   Just canvas <- C.getCanvasElementById "canvas"
   context <- C.getContext2D canvas
   inn <- Input.input
-  let game = S.foldp update initState inn
-  S.runSignal (render context <$> game)
+  launchAff $ do
+    qas <- QAs.getQAs
+    let game = S.foldp update (initState qas) inn
+    liftEff $ S.runSignal (render context <$> game)
 
 -----------
 -- Model
@@ -53,9 +59,9 @@ type State =
   }
 
 
-initState :: State
-initState =
-  { qas: QAs.qas
+initState :: Zipper QA -> State
+initState qas =
+  { qas: qas
   , score: 300.0
   , answer: 0
   , wall: -600.0
