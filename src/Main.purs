@@ -18,7 +18,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (log, CONSOLE)
 import Control.Monad.Eff.Exception (EXCEPTION)
-import Control.Monad.Aff (launchAff)
+import Control.Monad.Aff (launchAff, runAff)
 import Control.Timer (TIMER)
 import DOM (DOM)
 import Network.HTTP.Affjax (AJAX)
@@ -29,21 +29,23 @@ import Zipper
 import CanvasUtils
 import Shape
 import Model
+import Sound as Sound
 import QAs as QAs
 
 ----------
 -- Glue
 ----------
 
-main :: forall e. Eff (ajax :: AJAX, err :: EXCEPTION, console :: CONSOLE, dom :: DOM, timer :: TIMER, canvas :: C.Canvas | e) Unit
+main :: forall e. Eff (ajax :: AJAX, err :: EXCEPTION, console :: CONSOLE, sound :: Sound.SOUND, dom :: DOM, timer :: TIMER, canvas :: C.Canvas | e) Unit
 main = do
   Just canvas <- C.getCanvasElementById "canvas"
   context <- C.getContext2D canvas
   inn <- Input.input
+  sound <- Sound.new "audio/gling.mp3"
   launchAff $ do
     qas <- QAs.getQAs
     let game = S.foldp update (initState qas) inn
-    liftEff $ S.runSignal (render context <$> game)
+    liftEff $ S.runSignal (render context sound <$> game)
 
 -----------
 -- Model
@@ -56,6 +58,7 @@ type State =
   , wall :: Number
   , done :: Boolean
   , starting :: Boolean
+  , play :: Boolean
   }
 
 
@@ -67,6 +70,7 @@ initState qas =
   , wall: -600.0
   , done: false
   , starting: true
+  , play: false
   }
 
 tick :: Number
@@ -138,14 +142,17 @@ updateGame input state =
       , answer: answer
       , done: done
       , starting: false
+      , play: answer /= state.answer
       }
 
 ------------
 -- Render
 ------------
 
-render :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
-render context state = do
+render :: C.Context2D -> Sound.Sound -> State -> Eff ( sound :: Sound.SOUND, canvas :: C.Canvas | _) Unit
+render context sound state = do
+  when state.play $
+    runAff (const $ pure unit) (const $ pure unit) (Sound.play sound)
   clearCanvas context
   if state.starting
     then
