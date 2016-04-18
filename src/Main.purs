@@ -41,15 +41,31 @@ main = do
   Just canvas <- C.getCanvasElementById "canvas"
   context <- C.getContext2D canvas
   inn <- Input.input
-  sound <- Sound.new "audio/gling.mp3"
+  sounds <-
+    { change: _, gameover: _, welldone: _ }
+      <$> Sound.new "audio/gling.mp3"
+      <*> Sound.new "audio/gameover.mp3"
+      <*> Sound.new "audio/welldone.mp3"
+
   launchAff $ do
     qas <- QAs.getQAs
     let game = S.foldp update (initState qas) inn
-    liftEff $ S.runSignal (render context sound <$> game)
+    liftEff $ S.runSignal (render context sounds <$> game)
 
 -----------
 -- Model
 -----------
+
+data Sound
+  = Change
+  | GameOver
+  | WellDone
+
+type Sounds =
+  { change   :: Sound.Sound
+  , gameover :: Sound.Sound
+  , welldone :: Sound.Sound
+  }
 
 type State =
   { qas :: Zipper QA
@@ -58,7 +74,7 @@ type State =
   , wall :: Number
   , done :: Boolean
   , starting :: Boolean
-  , play :: Boolean
+  , sound :: Maybe Sound
   }
 
 
@@ -70,7 +86,7 @@ initState qas =
   , wall: -600.0
   , done: false
   , starting: true
-  , play: false
+  , sound: Nothing
   }
 
 tick :: Number
@@ -135,6 +151,17 @@ updateGame input state =
       doneAndQas = if new && score > 0.0 then next state.qas else Tuple (not state.done) state.qas
       done = not $ fst doneAndQas
       qas = snd doneAndQas
+      sound =
+        if state.done || state.score < -50.0 then
+           Nothing
+        else if not state.done && done then
+           Just WellDone
+        else if score < -50.0 then
+           Just GameOver
+        else if answer /= state.answer then
+           Just Change
+        else
+           Nothing
   in
       { qas: qas
       , wall: wall
@@ -142,17 +169,18 @@ updateGame input state =
       , answer: answer
       , done: done
       , starting: false
-      , play: answer /= state.answer
+      , sound: sound
       }
 
 ------------
 -- Render
 ------------
 
-render :: C.Context2D -> Sound.Sound -> State -> Eff ( sound :: Sound.SOUND, canvas :: C.Canvas | _) Unit
-render context sound state = do
-  when state.play $
-    runAff (const $ pure unit) (const $ pure unit) (Sound.play sound)
+render :: C.Context2D -> Sounds -> State -> Eff ( sound :: Sound.SOUND, canvas :: C.Canvas | _) Unit
+render context sounds state = do
+  case state.sound of
+    Nothing -> pure unit
+    Just s  -> playSound sounds s
   clearCanvas context
   if state.starting
     then
@@ -165,6 +193,16 @@ render context sound state = do
       when (state.score < -50.0) (renderGameOver context state)
       when state.done (renderGameComplete context state)
   pure unit
+
+playSound :: Sounds -> Sound -> Eff ( sound :: Sound.SOUND | _) Unit
+playSound sounds s =
+    runAff (const $ pure unit) (const $ pure unit) (Sound.play sound)
+  where
+    sound =
+      case s of
+        Change -> sounds.change
+        WellDone -> sounds.welldone
+        GameOver -> sounds.gameover
 
 clearCanvas ctx = do
   C.setFillStyle "#1B1C1B" ctx
